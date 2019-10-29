@@ -11,11 +11,11 @@ import (
 func handler(conn net.Conn) {
 	defer conn.Close()
 	for {
-		conn.SetDeadline(time.Now().Add(30 * time.Second))
+		conn.SetDeadline(time.Now().Add(10 * time.Second))
 		p, err := bin.Decode(conn)
 		if err != nil {
-			fmt.Errorf("Decode err:%s\n", err)
-			continue
+			fmt.Errorf("Decoding error: %s Terminating connection\n", err)
+			break
 		}
 		// leaving off the line terminator in fmt will print the entire client msg
 		// on the same line even beyond the 12 bytes until recieving a line terminator

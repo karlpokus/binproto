@@ -21,6 +21,10 @@ func main() {
 		io.Copy(os.Stdout, conn)
 	}()
 	for {
-		bin.Encode(conn, os.Stdin)
+		err = bin.Encode(conn, os.Stdin)
+		if err != nil {
+			fmt.Printf("Encoding error: %s Exiting", err)
+			break
+		}
 	}
 }

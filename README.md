@@ -21,7 +21,8 @@ $ go test
 - [x] fixed size packet buf
 - [x] tests
 - [ ] mask
-- [ ] continuation frame bit
+- [x] continuation frame bit
+- [ ] include array len in payload so we may use one call to binary.Read|Write
 - [ ] debug mode
 
 # license
