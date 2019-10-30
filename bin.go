@@ -58,7 +58,7 @@ func Decode(r io.Reader) (pkts Packets, err error) {
 			return
 		}
 		pkts = append(pkts, p)
-		if p.IsFin() {
+		if p.Fin {
 			break
 		}
 	}

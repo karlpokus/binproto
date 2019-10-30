@@ -26,8 +26,8 @@ $ go test
 - [ ] debug mode
 - [ ] try passing a slice to binary.Read
 - [ ] add packets.Add
-- [ ] make field Fin private and use Fin()
-- [ ] post repo to [mr Vladimirs blog](https://medium.com/learning-the-go-programming-language/encoding-data-with-the-go-binary-package-42c7c0eb3e73)
+- [x] replace isFin with .Fin
+- [x] post repo to [mr Vladimirs blog](https://medium.com/learning-the-go-programming-language/encoding-data-with-the-go-binary-package-42c7c0eb3e73)
 
 # license
 MIT

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// Packet fields must be exported
+// to work with binary.Read and Write
 type Packet struct { // 20 bytes
 	Fin bool   // 1 byte
 	Ts  uint32 // 4 bytes
@@ -17,10 +19,6 @@ func (p Packet) String() string {
 
 func (p Packet) Time() time.Time {
 	return time.Unix(int64(p.Ts), 0)
-}
-
-func (p Packet) IsFin() bool {
-	return p.Fin
 }
 
 type Packets []Packet
