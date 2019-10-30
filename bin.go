@@ -2,64 +2,65 @@ package bin
 
 import (
 	"encoding/binary"
-	"fmt"
 	"io"
 	"time"
 )
 
-type packet struct { // 20 bytes
-	Fin bool   // 1 byte
-	Ts  uint32 // 4 bytes
-	Msg [15]byte
+// hasTerm determines if the byte slice contains a line terminator
+func hasTerm(b []byte) bool {
+	for _, x := range b {
+		if x == 10 {
+			return true
+		}
+	}
+	return false
 }
 
-func (p packet) String() string {
-	return fmt.Sprintf("%s", p.Msg)
-}
-
-func (p packet) Time() time.Time {
-	return time.Unix(int64(p.Ts), 0)
-}
-
-func (p packet) IsFin() bool {
-	return p.Fin
-}
-
-// splitPackets returns n packets read from r with the last one having
+// readPackets returns Packets read from r with the last one having
 // FIN set to true
-func splitPackets(r io.Reader) ([]packet, error) {
-	var packets []packet
+func readPackets(r io.Reader) (Packets, error) {
+	var pkts Packets
 	for {
 		var b [15]byte
-		n, err := r.Read(b[:])
+		_, err := r.Read(b[:])
 		if err != nil && err != io.EOF {
-			return packets, err
+			return pkts, err
 		}
-		if n == 0 {
-			break
-		}
-		p := packet{
+		isLast := hasTerm(b[:])
+		p := Packet{
 			Ts:  uint32(time.Now().Unix()),
 			Msg: b,
+			Fin: isLast,
 		}
-		packets = append(packets, p)
+		pkts = append(pkts, p)
+		if isLast {
+			break
+		}
 	}
-	packets[len(packets)-1].Fin = true // set FIN true on last packet
-	return packets, nil
+	return pkts, nil
 }
 
-// Encode encodes n packets read from r and writes them to w - one by one
+// Encode encodes Packets read from r and writes them to w - one by one
 func Encode(w io.Writer, r io.Reader) error {
-	packets, err := splitPackets(r)
+	pkts, err := readPackets(r)
 	if err != nil {
 		return err
 	}
-	return binary.Write(w, binary.BigEndian, packets) // one by one
+	return binary.Write(w, binary.BigEndian, pkts) // one by one
 }
 
-// Decode decodes a packets read from r
-func Decode(r io.Reader) (packet, error) {
-	var p packet
-	err := binary.Read(r, binary.BigEndian, &p)
-	return p, err
+// Decode decodes-, and returns Packets read from r
+func Decode(r io.Reader) (pkts Packets, err error) {
+	for {
+		var p Packet
+		err = binary.Read(r, binary.BigEndian, &p)
+		if err != nil {
+			return
+		}
+		pkts = append(pkts, p)
+		if p.IsFin() {
+			break
+		}
+	}
+	return
 }

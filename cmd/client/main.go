@@ -23,7 +23,7 @@ func main() {
 	for {
 		err = bin.Encode(conn, os.Stdin)
 		if err != nil {
-			fmt.Printf("Encoding error: %s Exiting", err)
+			fmt.Printf("Encoding error: %s\n", err)
 			break
 		}
 	}

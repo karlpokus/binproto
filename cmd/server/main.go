@@ -4,22 +4,30 @@ import (
 	"fmt"
 	"net"
 	"time"
+	"io"
 
 	"bin"
 )
 
 func handler(conn net.Conn) {
+	fmt.Println("Client connected")
 	defer conn.Close()
 	for {
-		conn.SetDeadline(time.Now().Add(10 * time.Second))
-		p, err := bin.Decode(conn)
-		if err != nil {
-			fmt.Errorf("Decoding error: %s Terminating connection\n", err)
-			break
+		conn.SetDeadline(time.Now().Add(30 * time.Second))
+		pkts, err := bin.Decode(conn)
+		if err, ok := err.(net.Error); ok && err.Timeout() {
+			fmt.Println("Connection timeout")
+			return
 		}
-		// leaving off the line terminator in fmt will print the entire client msg
-		// on the same line even beyond the 12 bytes until recieving a line terminator
-		fmt.Printf("%s", p)
+		if err == io.EOF {
+			fmt.Println("Client disconnected")
+			return
+		}
+		if err != nil {
+			fmt.Errorf("Decoding error: %s\n", err)
+			continue
+		}
+		fmt.Printf("%s", pkts) // payload includes a line terminator
 		fmt.Fprintln(conn, "ok")
 	}
 }
