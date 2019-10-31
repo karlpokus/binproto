@@ -2,11 +2,12 @@
 A binary protocol in go
 
 # usage
+Toggle debug mode with the g flag
 ```bash
 # run server
-$ go run ./cmd/server
+$ go run ./cmd/server [-g]
 # run interactive client
-$ go run ./cmd/client
+$ go run ./cmd/client [-g]
 > ..
 ```
 
@@ -23,7 +24,7 @@ $ go test
 - [ ] mask
 - [x] continuation frame bit
 - [ ] include array len in payload so we may use one call to binary.Read|Write
-- [ ] debug mode
+- [x] debug mode
 - [ ] try passing a slice to binary.Read
 - [ ] add packets.Add
 - [x] replace isFin with .Fin

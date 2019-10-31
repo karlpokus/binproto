@@ -22,10 +22,11 @@ func readPackets(r io.Reader) (Packets, error) {
 	var pkts Packets
 	for {
 		var b [15]byte
-		_, err := r.Read(b[:])
+		n, err := r.Read(b[:])
 		if err != nil && err != io.EOF {
 			return pkts, err
 		}
+		debugLog.Printf("%d bytes read\n", n)
 		isLast := hasTerm(b[:])
 		p := Packet{
 			Ts:  uint32(time.Now().Unix()),
@@ -46,6 +47,7 @@ func Encode(w io.Writer, r io.Reader) error {
 	if err != nil {
 		return err
 	}
+	debugLog.Printf("%d packets encoded\n", len(pkts))
 	return binary.Write(w, binary.BigEndian, pkts) // one by one
 }
 
@@ -62,5 +64,6 @@ func Decode(r io.Reader) (pkts Packets, err error) {
 			break
 		}
 	}
+	debugLog.Printf("%d packets decoded\n", len(pkts))
 	return
 }

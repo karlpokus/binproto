@@ -2,8 +2,8 @@ package bin
 
 import (
 	"bytes"
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestEncodeDecode(t *testing.T) {
